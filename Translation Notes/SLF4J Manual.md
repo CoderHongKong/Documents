@@ -1,8 +1,8 @@
 # SLF4J 用户手册
-The Simple Logging Facade for Java (SLF4J) ，作为各种日志框架的外观或者抽象，例如java.util.logging，logback以及log4j。SLF4J允许最终用户在部署时插入期望的日志框架。注意，你的库或者应用程序启用SLF4J意味着仅需要添加一个强制性依赖，那就是slf4j-api-1.8.0-beta2.jar。
-**SNICE 1.6.0** 如果在类路径下没有发现绑定，那么SLF4J将默认无操作实现。
-**SINCE 1.7.0** Logger接口中的打印方法现在提供变种接受可变参数来代替Object[].这个变化意味着SLF4J要求JDK 1.5或者更高版。在java引擎下，java编译器需要将方法里面可变参数部分转换成Object[]。 因此，通过编译器生成Logger接口在1.7.x和1.6.x版本无法区分。因此，SLF4J版本1.7.x与SLF4J版本1.6.x完全100%兼容。
-**SINCE 1.7.9** 通过设置slf4j.detectLoggerNameMismatch的系统属性为true，SLF4J可以自动发现错误命名的记录器。
+- The Simple Logging Facade for Java (SLF4J) ，作为各种日志框架的外观或者抽象，例如java.util.logging，logback以及log4j。SLF4J允许最终用户在部署时插入期望的日志框架。注意，你的库或者应用程序启用SLF4J意味着仅需要添加一个强制性依赖，那就是slf4j-api-1.8.0-beta2.jar。
+- **SNICE 1.6.0** 如果在类路径下没有发现绑定，那么SLF4J将默认无操作实现。
+- **SINCE 1.7.0** Logger接口中的打印方法现在提供变种接受可变参数来代替Object[].这个变化意味着SLF4J要求JDK 1.5或者更高版。在java引擎下，java编译器需要将方法里面可变参数部分转换成Object[]。 因此，通过编译器生成Logger接口在1.7.x和1.6.x版本无法区分。因此，SLF4J版本1.7.x与SLF4J版本1.6.x完全100%兼容。
+- **SINCE 1.7.9** 通过设置slf4j.detectLoggerNameMismatch的系统属性为true，SLF4J可以自动发现错误命名的记录器。
 
 #### Hello World
 按照编程传统中的惯例，这里是一个示例，说明通过最简单的方法使用SLF4J输出“Hello World”。首先获取一个名字为“Hello World”的记录器。该记录器又用于记录消息“Hello World”。
@@ -17,11 +17,13 @@ import org.slf4j.Logger;
         }
     }
 ```
-要运行示例，你首先需要下载slf4j的发行版，然后解压它。完成后，将slf4j-api-1.8.0-beta2.jar添加到类路径中。
-编译和运行HelloWorld将在控制台打印如下输出结果。
+- 要运行示例，你首先需要下载slf4j的发行版，然后解压它。完成后，将slf4j-api-1.8.0-beta2.jar添加到类路径中。
+- 编译和运行HelloWorld将在控制台打印如下输出结果。
+```
 SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
 SLF4J: Defaulting to no-operation (NOP) logger implementation
 SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+```
 打印此警告是因为在类路径上找不到slf4j绑定。
 只要在类路径中添加绑定，警告就会消失。假如你添加slf4j-simple-1.8.0-beta2.jar以至于你的类路径包括：
 - slf4j-api-1.8.0-beta2.jar
@@ -128,26 +130,26 @@ SLF4J不依赖任何特殊的类加载机械。事实上，每个SLF4J绑定在�
 
 #### 二进制兼容性
 
-SLF4J 绑定指派一个工件，例如：slf4j-jdk14.jar 或者 slf4j-log4j12.jar 用于将slf4j绑定到底层的日志框架，例如java.util.logging 有log4j。
+- SLF4J 绑定指派一个工件，例如：slf4j-jdk14.jar 或者 slf4j-log4j12.jar 用于将slf4j绑定到底层的日志框架，例如java.util.logging 有log4j。
 
-混合不同版本的slf4j-api.jar 和 SLF4J 绑定可能导致问题。例如，如果你正在使用slf4j-api-1.8.0-beta2.jar，那么你也应该使用slf4j-simple-1.8.0-beta2.jar，使用 slf4j-simple-1.5.5.jar 将无效。
+- 混合不同版本的slf4j-api.jar 和 SLF4J 绑定可能导致问题。例如，如果你正在使用slf4j-api-1.8.0-beta2.jar，那么你也应该使用slf4j-simple-1.8.0-beta2.jar，使用 slf4j-simple-1.5.5.jar 将无效。
 
-然而，从客户端角度来看，slf4j-api的所有版本是相互兼容的。使用slf4j-api-N.jar编译的客户端代码，对于任何N和M，使用slf4j-api-M.jar都可以很好地运行。你只需要确保你的绑定版本与 slf4j-api.jar 的版本是匹配的。你不用担心项目给定依赖使用的slf4j-api.jar的版本。你随时可以使用任何版本的slf4j-api.jar，并且只要slf4j-api.jar的版本和它的绑定匹配，你应该没问题。
+- 然而，从客户端角度来看，slf4j-api的所有版本是相互兼容的。使用slf4j-api-N.jar编译的客户端代码，对于任何N和M，使用slf4j-api-M.jar都可以很好地运行。你只需要确保你的绑定版本与 slf4j-api.jar 的版本是匹配的。你不用担心项目给定依赖使用的slf4j-api.jar的版本。你随时可以使用任何版本的slf4j-api.jar，并且只要slf4j-api.jar的版本和它的绑定匹配，你应该没问题。
 
-在初始化的时候，如果SLF4J怀疑 slf4j-api 和 其绑定存在不匹配问题，那么它将发出一个怀疑不匹配的警告。
+- 在初始化的时候，如果SLF4J怀疑 slf4j-api 和 其绑定存在不匹配问题，那么它将发出一个怀疑不匹配的警告。
 
 #### 通过SLF4J合并日志
 
-通常，给定的项目将依赖于SLF4J以外日志API的各种组件。根据JCL，java.util.logging，log4j和SLF4J的组合找到项目是很常见的。然后，需要通过单个的通道合并日志。SLF4J 迎合常见的使用场景通过提供桥接模块给 JCL, java.util.logging and log4j。有关更多详细信息，请参照 Bridging legacy APIs。
+- 通常，给定的项目将依赖于SLF4J以外日志API的各种组件。根据JCL，java.util.logging，log4j和SLF4J的组合找到项目是很常见的。然后，需要通过单个的通道合并日志。SLF4J 迎合常见的使用场景通过提供桥接模块给 JCL, java.util.logging and log4j。有关更多详细信息，请参照 Bridging legacy APIs。
 
 #### 映射诊断上下文支持
-“映射诊断上下文支持”本质上是通过日志框架维护的映射，其中应用程序代码提供键值对，然后可以将键值对通过日志框架插入到日志信息中。MDC 数据在过滤消息或者触发某些动作也是非常有帮助的。
+- “映射诊断上下文支持”本质上是通过日志框架维护的映射，其中应用程序代码提供键值对，然后可以将键值对通过日志框架插入到日志信息中。MDC 数据在过滤消息或者触发某些动作也是非常有帮助的。
 
-SLF4J支持MDC，或者映射诊断上下文。如果底层日志框架提供MDC功能，那么SLF4J将委托底层框架的MDC。此时请注意，只有log4j和logback提供MDC功能。如果底层框架不支持MDC功能，例如：java.util.logging，那么SLF4J仍然会存储MDC数据，但是其中的信息需要通过自定义的用户代码来检索。
+- SLF4J支持MDC，或者映射诊断上下文。如果底层日志框架提供MDC功能，那么SLF4J将委托底层框架的MDC。此时请注意，只有log4j和logback提供MDC功能。如果底层框架不支持MDC功能，例如：java.util.logging，那么SLF4J仍然会存储MDC数据，但是其中的信息需要通过自定义的用户代码来检索。
 
-因此，作为SLF4J用户，可以在log4j和logback的已经存在的情况下利用MDC信息，但不会将这些日志框架作为依赖项强加给用户。
+- 因此，作为SLF4J用户，可以在log4j和logback的已经存在的情况下利用MDC信息，但不会将这些日志框架作为依赖项强加给用户。
 
-更多的MDC信息，请参见 [logback手册的MDC章节](https://logback.qos.ch/manual/mdc.html)
+- 更多的MDC信息，请参见 [logback手册的MDC章节](https://logback.qos.ch/manual/mdc.html)
 
 #### 总结摘要
 
