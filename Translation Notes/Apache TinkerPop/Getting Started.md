@@ -1,11 +1,13 @@
 # 入门
+
 - Apache TinkerPop 是一个开源的图形计算框架。在其内部，TinkerPop代表大量的能力和技术，还有一个额外拓展的第三方贡献的图形库和系统世界。TinkerPop的生态系统对于所有经验的新手来说显得很复杂，特别是在第一次浏览参考文档时。
 
 - 所以，你从哪里开始使用TinkerPop呢？如何快速投入并获得成效？好吧 - Gremlin，TinkerPop最知名的公民，在这里帮助这个30分钟的教程。没错-在短短30分钟内，你也可以使用TinkerPop开始构建图形应用程序。欢迎来到TinkerPop锻炼 - 你的Gremlin！
 
 ![image](http://tinkerpop.apache.org/docs/3.3.4/images/gremlin-gym.png)
 
-# 前5分钟
+## 前5分钟
+
 - 使用TinkerPop只需五分钟即可学到很多东西，但在这之前，适当地介绍一下你的教练是合适的。认识Gremlin！
 
 ![image](http://tinkerpop.apache.org/docs/3.3.4/images/gremlin-standing.png)
@@ -53,8 +55,10 @@ gremlin> graph = TinkerFactory.createModern()
 gremlin> g = graph.traversal()
 ==>graphtraversalsource[tinkergraph[vertices:6 edges:6], standard]
 ```
+
 - 第一命令创建了名叫graph一个图实例，他从而提供了你想要Gremlin去遍历的数据引用。不幸的是，只提供graph不能提供给Gremlin足够的上下文去做它的工作。你还要做一些叫TraversalSource的事情，它通过第二个命令生成。TraversalSource给Gremlin提供了额外的信息（例如：遍历策略的应用和遍历引擎的使用），它提供了指导如何去执行遍历图。
 - 有了 TraversalSource g 可以让Gremlin遍历图表：
+
 ```
 gremlin> g.V() //1\
 ==>v[1]
