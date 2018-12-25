@@ -1,8 +1,8 @@
 # 入门
 
-- Apache TinkerPop 是一个开源的图形计算框架。在其内部，TinkerPop代表大量的能力和技术，还有一个额外拓展的第三方贡献的图形库和系统世界。TinkerPop的生态系统对于所有经验的新手来说显得很复杂，特别是在第一次浏览参考文档时。
+- Apache TinkerPop 是一个开源的图形计算框架。在其内部，TinkerPop代表大量的能力和技术，还有一个额外拓展的第三方贡献的图形库和系统世界。TinkerPop的生态系统对于所有经验的新手来说显得很复杂，特别是在第一次浏览参考文档时。
 
-- 所以，你从哪里开始使用TinkerPop呢？如何快速投入并获得成效？好吧 - Gremlin，TinkerPop最知名的公民，在这里帮助这个30分钟的教程。没错-在短短30分钟内，你也可以使用TinkerPop开始构建图形应用程序。欢迎来到TinkerPop锻炼 - 你的Gremlin！
+- 所以，你从哪里开始使用TinkerPop呢？如何快速投入并获得成效？好吧 - Gremlin，TinkerPop最知名的公民，在这里帮助这个30分钟的教程。没错-在短短30分钟内，你也可以使用TinkerPop开始构建图形应用程序。欢迎来到TinkerPop锻炼 - 你的Gremlin！
 
 ![image](http://tinkerpop.apache.org/docs/3.3.4/images/gremlin-gym.png)
 
