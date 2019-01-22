@@ -1,0 +1,10 @@
+# spring
+
+## org.springframework.context.ApplicationContextAware
+
+由任何对象被实现的接口希望被其运行的ApplicationContext通知
+例如当一个对象要求访问一系列协作的bean时，实现这个接口是有意义的。请注意，由bean引用进行配置比仅仅为了bean查找的目的而实现这个接口更好。
+该接口也可以被实现如果一个对象需要访问文件资源，即，想要调用getResource方法，想要发布一个应用程序事件，或者需要访问MessageSource。然而，最好在特定的场景中实现更为具体的 ResourceLoaderAware， ApplicationEventPublisherAware or MessageSourceAware 接口。
+请注意，文件资源依赖项也可以作为Resource类型的bean属性公开，通过bean工厂自动类型转换的字符串填充。这就不需要为了实现访问特定的资源文件而实现任何回调接口。
+ApplicationObjectSupport 是对于应用程序对象的便捷的基类，实现了该接口。
+对于所以bean生命周期的方法列表，参照BeanFactory java文档。
