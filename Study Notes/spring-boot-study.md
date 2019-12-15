@@ -160,12 +160,43 @@ public ConfigurableApplicationContext run(String... args) {
 `bin/kafka-server-start.sh config/server.properties `
 * 创建主题：
 `bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic my_topic `
-* 查看主题：
+* 查看主题(--zookeeper 可以用 --bootstrap-server代替)：
 `bin/kafka-topics.sh --list --zookeeper localhost:2181`
+* 查看某个主题详细信息：
+`bin/kafka-topics.sh --describe --topic my_topic --zookeeper localhost:2181
+`
+![-w579](media/15764012165838.jpg)
+![-w698](media/15764012880614.jpg)
+![-w454](media/15764012504711.jpg)
+
 * 创建生产者：
 `bin/kafka-console-producer.sh --broker-list localhost:9092 --topic my_topic`
 * 创建消费者：
 `bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic my_topic (--from-beginning：启动并拉取历史消息) `
+![-w718](media/15764010906427.jpg)
+
+-------
+* 那么，这些主题信息是保存在什么地方的呢？
+实际上，这些信息都是保存在 Zookeeper 中的。Kafka 是重度依赖于 zookeeper的。zookeeper 保存了 Kafka 所需的元信息以及关于主题、消费者偏移量等诸多信息，下面我们就到 Zookeeper 中査看一下相关的内容
+* 连接zookeeper：`./zookeeper-shell.sh localhost:2181`
+![-w607](media/15764022332838.jpg)
+* 查看kafka主题信息
+`ls /config/topics
+[my_topic, __consumer_offsets, your_topic]
+ls2 /config/topics
+[my_topic, __consumer_offsets, your_topic]
+cZxid = 0x11
+ctime = Sun Dec 15 12:06:24 CST 2019
+mZxid = 0x11
+mtime = Sun Dec 15 12:06:24 CST 2019
+pZxid = 0xa4
+cversion = 3
+dataVersion = 0
+aclVersion = 0
+ephemeralOwner = 0x0
+dataLength = 0
+numChildren = 3
+`
 
 ### 3、kafka分区
 * 分区的概念：
@@ -196,3 +227,5 @@ public ConfigurableApplicationContext run(String... args) {
 
     3. 00000000000000000000.timeindex：该文件是一个基于消息日期的索引文件，主要用途是在一些根据日期或是时间来寻找消息的场景下使用，此外在基于时间的日志 rolling 或是基于时间的日志保留策略等情况下也会使用。实际上，该文件是在 Kafka 较新的版本中才增加的，老版本 Kafka 是没有该文件的。它是对 *.index 文件的一个有益补充。 *.index 文件是基于偏移量的索引文件，而 *.timeindex 则是基于时间戳的索引文件。
     4. leader-epoch-checkpoint：是 leaders 的一个缓存文件。实际上，它是与 Kafkas 的 HW (High Water）与 LEO (Log End Offset）相关的一个重要文件。
+
+### kafka脚本命令
