@@ -161,7 +161,12 @@ public ConfigurableApplicationContext run(String... args) {
 * 创建主题：
 `bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic my_topic `
 * 查看主题(--zookeeper 可以用 --bootstrap-server代替)：
-`bin/kafka-topics.sh --list --zookeeper localhost:2181`
+`bin/kafka-topics.sh --list --zookeeper localhost:2181
+`或者
+`kafka-topics.sh --list --bootstrap-server localhost:9092`
+* 删除主题：
+`kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic your_topic`
+
 * 查看某个主题详细信息：
 `bin/kafka-topics.sh --describe --topic my_topic --zookeeper localhost:2181
 `
@@ -172,7 +177,8 @@ public ConfigurableApplicationContext run(String... args) {
 * 创建生产者：
 `bin/kafka-console-producer.sh --broker-list localhost:9092 --topic my_topic`
 * 创建消费者：
-`bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic my_topic (--from-beginning：启动并拉取历史消息) `
+`bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic my_topic --group my_group (--from-beginning：启动并拉取历史消息) `
+![-w604](media/15764026512256.jpg)
 ![-w718](media/15764010906427.jpg)
 
 -------
