@@ -166,14 +166,23 @@ public ConfigurableApplicationContext run(String... args) {
 `kafka-topics.sh --list --bootstrap-server localhost:9092`
 * 删除主题：
 `kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic your_topic`
+删除主题必须设置配置文件server.properties中配置项delete.topic.enable 设为true（默认已经设置为true），否则这个删除操作将不会起任何作用。
+![-w592](media/15764040367316.jpg)
+![-w568](media/15764040087243.jpg)
+![-w603](media/15764041288089.jpg)
+
 
 * 查看某个主题详细信息：
 `bin/kafka-topics.sh --describe --topic my_topic --zookeeper localhost:2181
 `
 ![-w579](media/15764012165838.jpg)
-![-w698](media/15764012880614.jpg)
-![-w454](media/15764012504711.jpg)
-
+    * 第一行会显示出所有分区（my_topic 主题的分区数是 1, 即在之前创建主题时所指定的--partitions 1 这个参数所确定的）的一个总结信息；后续的每一行则给出一个分区的信息，如果只有一个分区，那么就只会显示出一行，正如上述输出那样。
+    * 第二行表示的信息为：
+        * 主题名：my_topic
+        * 当前的分区：0 
+        * Leader Broker: 0 
+        * 副本：0
+        * Isr  (In-Sync Replica): 0
 * 创建生产者：
 `bin/kafka-console-producer.sh --broker-list localhost:9092 --topic my_topic`
 * 创建消费者：
@@ -186,7 +195,7 @@ public ConfigurableApplicationContext run(String... args) {
 实际上，这些信息都是保存在 Zookeeper 中的。Kafka 是重度依赖于 zookeeper的。zookeeper 保存了 Kafka 所需的元信息以及关于主题、消费者偏移量等诸多信息，下面我们就到 Zookeeper 中査看一下相关的内容
 * 连接zookeeper：`./zookeeper-shell.sh localhost:2181`
 ![-w607](media/15764022332838.jpg)
-* 查看kafka主题信息
+* 查看kafka主题信息（主题位于：/config/topics目录下）：
 `ls /config/topics
 [my_topic, __consumer_offsets, your_topic]
 ls2 /config/topics
