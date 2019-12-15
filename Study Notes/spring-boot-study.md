@@ -124,20 +124,8 @@ public ConfigurableApplicationContext run(String... args) {
 	}
 ```
 ## 二、spring-boot模块
-### 1、spring-boot 整合kafka
 
-* 启动zookeeper命令：
-` bin/zookeeper-server-start.sh config/zookeeper.properties `
-* 启动kafka命令：
-`bin/kafka-server-start.sh config/server.properties `
-* 创建主题：
-`bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic my_topic `
-* 创建生产者：
-`bin/kafka-console-producer.sh --broker-list localhost:9092 --topic my_topic`
-* 创建消费者：
-`bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic my_topic`
-
-### 2、kafka概念
+### 1、kafka概念
 
 #### 生产者（Producer)
 
@@ -164,4 +152,47 @@ public ConfigurableApplicationContext run(String... args) {
 
 这又是 Kafka 中的一个核心概念。消费者组与消费者之间密切相关。在 Kafka 中，多个消费者可以共同构成一个消费者组，而一个消费者只能从属于一个消费者组。消费者组最为重要的一个功能是实现广播与单播的功能。一个消费者组可以确保其所订阅的 Topic 的每个分区只能被从属于该消费者组中的唯一一个消费者所消费；如果不同的消费者组订阅了同个 Topic，那么这些消费者组之间是彼此独立的，不会受到相互的干扰。因此，如果我们希望一条消息可以被多个消费者所消费，那就可以将这些消费者放置到不同的消费者组中这实际上就是**广播**的效果；如果希望一条消息只能被一个消费者所消费，那么就可以将这些消费者放置到同一个消费者组中，这实际上就是**单播**的效果。因此，我们可以将消费者组看作是『逻辑上的订阅者』，而物理上的订阅者则是各个消费者。值得注意的是，消费者组是一个非常、非常、非常重要的概念。很多 Kafka 初学者都会遇到这样一个问题：将系统以集群的形式部署（比如说部署到 3 台机器或是虚拟机上），每台机器的指定代码都是完全一样的，那么在运行时，只会有一台机器会持续不断地收到 Brokerr 中的消息，而其他机器则一条消息也收不到。究其本质，系统部署时采用了集群部署，因此每台机器的代码与配置都是完全一样的；这样，这些机器（消费者）都从属于同一个消费者组，既然从属于同一个消费者组，那么这同一个消费者组中，只会有一个消费者会接收到消息，而其他消费者则完全接收不到任何消息，即单播的效果。这一点尤其值得大家注意。
 
-#### 
+### 2、spring-boot 整合kafka
+
+* 启动zookeeper命令：
+` bin/zookeeper-server-start.sh config/zookeeper.properties `
+* 启动kafka命令：
+`bin/kafka-server-start.sh config/server.properties `
+* 创建主题：
+`bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic my_topic `
+* 查看主题：
+`bin/kafka-topics.sh --list --zookeeper localhost:2181`
+* 创建生产者：
+`bin/kafka-console-producer.sh --broker-list localhost:9092 --topic my_topic`
+* 创建消费者：
+`bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic my_topic (--from-beginning：启动并拉取历史消息) `
+
+### 3、kafka分区
+* 分区的概念：
+    1. 每个分区都是一个有序、不可变的消息序列，后续新来的消息会源源不断地、持续追加到分区的后面，这相当于一种结构化的提交日志（类似于 Git 的提交日志）
+    2. 分区中的每一条消息都会被分配一个连续的 id 值（即 offset），该值用于唯一标识分区中的每一条消息。
+* 分区的重要作用：
+    1. 分区中的消息数据是存储在日志文件中的，而且同一分区中的消息数据是按照发送顺序严格有序的。分区在逻辑上对应一个日志，当生产者将消息写入分区中时，实际上是写到了分区所对应的日志当中。而日志可以看作是一种逻辑上的概念，它对应于磁盘上的一个目录。一个日志文件由多个 Segment（段）来构成，每个 Segment 对应于ー个索引文件与ー个日志文件。
+
+    2. 借助于分区，我们可以实现 Kafka Servers 的水平扩展。对于一台机器来说，无论是物理机还是虚拟机，其运行能力总归是有上限的。当一台机器到达其能力上限时就无法再扩展了，即垂直扩展能力总是受到硬件制约的。通过使用分区，我们可以将一个主题中的消息分散到不同的 Kafka Server 上（这里需要使用 Kafka 集群），这样当机器的能力不足时，我们只需要添加机器就可以了，在新的机器上创建新的分区，这样理论上就可以实现无限的水平扩展能力。
+
+    3. 分区还可以实现并行处理能力，向一个主题所发送的消息会发送给该主题所拥有的不同的分区中，这样消息就可以实现并行发送与处理，由多个分区来接收所发送的消息。
+
+* Segment（段）:
+    1. 一个分区（partition）是由一系列有序、不可变的消息所构成的。一个 partition 中的消息数量可能会非常多，因此显然不能将所有消息都保存到一个文件当中。因此，类似于log4j的rolling log，当 partition 中的消息数量增长到一定程度之后，消息文件会进行切割，新的消息会被写到一个新的文件当中，当新的文件增长到定程度后，新的消息又会被写到另一个新的文件当中，以此类推；这一个个新的数据文件我们就称之为segment（段）。
+    2. 因此，一个 partition 在物理上是由一个或者多个 segment 所构成的。每个 segment 中则保存了真实的消息数据。
+
+* 关于 partiton 与 segment 之间的关系
+
+    1. 每个 partition 都相当于ー个大型文件被分配到多个大小相等的 segment 数据文件中，每个 segment 中的消息数量未必相等（这与消息大小有着紧密的关系，不同的消息所占据的磁盘空间显然是不一样的），这个特点使得老的 segment 文件可以很容易就被删除掉，有助于提升磁盘的利用效率。
+
+    2. 每个 partition 只需要支持顺序读写即可，segment文件的生命周期是由 Kafka Servers 的配置参数所決定的。比如说，server.propertles 文件中的参数项 log.retention.hours=168 就表示 7 天后删除老的消息文件。
+* 关于分区目录中的 4 个文件的含义与作用
+![-w254](media/15763997583665.jpg)
+
+    1. 00000000000000000000.index：它是 segment 文件的素引文件，它与接下来我们要介绍的 00000000000.109 数据文件是成对出现的。后缀，index 就表示这是个索引文件。
+
+    2. 00000000000000000000.log：它是 segment 文件的数据文件，用于存储实际的消息。该文件是二进制格式的。segment 文件的命名规则是 partition 全局的第一个 segment 从开始，后孌每个 segment 文件名为上ー个 segment 文件最后一条消息的 offset 值。没有数字则用填充。由于这里的主题的消息数量较少，因此只有一个数据文件。
+
+    3. 00000000000000000000.timeindex：该文件是一个基于消息日期的索引文件，主要用途是在一些根据日期或是时间来寻找消息的场景下使用，此外在基于时间的日志 rolling 或是基于时间的日志保留策略等情况下也会使用。实际上，该文件是在 Kafka 较新的版本中才增加的，老版本 Kafka 是没有该文件的。它是对 *.index 文件的一个有益补充。 *.index 文件是基于偏移量的索引文件，而 *.timeindex 则是基于时间戳的索引文件。
+    4. leader-epoch-checkpoint：是 leaders 的一个缓存文件。实际上，它是与 Kafkas 的 HW (High Water）与 LEO (Log End Offset）相关的一个重要文件。
