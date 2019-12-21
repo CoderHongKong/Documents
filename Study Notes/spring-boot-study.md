@@ -243,4 +243,10 @@ numChildren = 3
     3. 00000000000000000000.timeindex：该文件是一个基于消息日期的索引文件，主要用途是在一些根据日期或是时间来寻找消息的场景下使用，此外在基于时间的日志 rolling 或是基于时间的日志保留策略等情况下也会使用。实际上，该文件是在 Kafka 较新的版本中才增加的，老版本 Kafka 是没有该文件的。它是对 *.index 文件的一个有益补充。 *.index 文件是基于偏移量的索引文件，而 *.timeindex 则是基于时间戳的索引文件。
     4. leader-epoch-checkpoint：是 leaders 的一个缓存文件。实际上，它是与 Kafkas 的 HW (High Water）与 LEO (Log End Offset）相关的一个重要文件。
 
-### kafka脚本命令
+## spring-boot整合spring-mvc原理
+### 1、spring-web包结构
+![-w391](media/15769138496307.jpg)
+* servlet3.0规范接口：`javax.servlet.ServletContainerInitializer`
+![-w684](media/15769140736896.jpg)
+* ServletContainerInitalizers(SCIs)是通过 `META-INF/services/javax.servlet.ServletContainerInitializer` 文件中的一个条目来注册，这个文件必须被包含在JAR文件中，且这个JAR文件包含了SCI的实现。
+* 无论元数据是否设置完成，都会执行SCI处理。SCI处理可以通过可以通过片段的顺序来控制每个JAR文件。如果定义了绝对顺序，那么将仅对包含在顺序中的JAR文件做SCI处理。为了完全关闭SCI处理，可以定义一个空的绝对顺序。SCIs通过添加 `javax.servlet.annotation.HandlesTypes` 注解到这个类中，来注册感兴趣的注解（类、方法或者字段）和/或类型。
