@@ -75,3 +75,72 @@
 - Eden、Survivor、Old 区不再固定，在内存使用效率上来说更灵活
 - G1 可以通过设置预期停顿时间（Pause Time）来控制垃圾收集时间，避免应用雪崩现象
 - G1 在回收内存后会马上同时做合并空闲内存的工作，而 CMS 默认是在 STW (stop the world）的时候做 G1 会在 Young GC 中使用，而 CMS 只能在 Old 区使用
+
+#### 7、G1的适合场景
+- 服务端多核 CPU、JVM 内存占用较大的应用
+- 应用在运行过程中会产生大量内存碎片、需要经常压缩空
+- 想要更可控、可预期的 GC 停顿周期：防止高并发下应用的雪崩现象
+
+#### 8、G1 GC 模式
+- G1 提供了两种 GC 模式，Young GC 和 Mixed GC，两种都是**完全** Stop The World的。
+- Young GC：选定所有年轻代里的 Region。通过控制年轻代的 Region 个数，即年轻代内存大小来控制 Young GC 的时间开销。
+- Mixed GC：选定所有年轻代里的 Region，外加根据 global concurrent marking 统计得出收集收益高的若干老年代 Region。在用户指定的开销目标范围内尽可能选择收益高的老年代 Region、
+- Mixed GC 不是 Full GC，**它只能回收部分老年代的 Region**，如果 Mixed GC 实在无法跟上程序分配内存的速度，导致老年代填满无法继续进行 Mixed GC，就会使用 serial old GC (Fu GC）来收集整个 GC heap 所以本质上，**G1是不提供 Full GC的。**
+
+#### 9、Global concurrent marking 
+- 执行过程类似于 CMS，但是不同的是，在 G1 GC 中，它**主要是为 Mixed GC 提供标记服务的，并不是一次 GC 过程的一个必须环节**。global concurrent marking 的执行过程分为四个步骤：
+ - 初始标记（initial mark, STW）：它标记了从 GC Root 开始直接可达的对象
+ - 并发标记（Concurrent Marking）：这个阶段从 GC Root 开始对 heap 中的对象进行标记，标记线程与应用程序线程并发执行，并且收集各个 Region 的存活对象信息
+ - 重新标记（Remark, STW）：标记那些在并发标记阶段发生变化的对象，将被回收。
+ - 清理（Cleanup）：清除空 Region（没有存活对象的），加入到 free list
+       - 第一阶段 initial mark 是共用了 Young GC 的暂停，这是因为他们可以复用 root scan 操作，所以可以说 global concurrent marking 是伴随 Young GC 而发生的。
+
+       -  第四阶段 Cleanup 只是回收了没有存活对象的 Region，所以它并不需要 STW。
+
+#### 10、G1 在运行过程中的主要模式
+
+- YGC（不同于 CMS）
+- 并发阶段
+- 混合模式
+- Full GC（一般是 G1 出现问题时发生）
+- G1 YGC 在 Eden 充满时触发，在回收之后所有之前属于 Eden 的区块全部变成空白即不属于任何一个分区（Eden、Survivor、Old)
+
+#### Mixed GC
+- 什么时候发生 Mixed GC?
+    - 由一些参数控制，另外也控制着哪些老年代 Region 会被选入 CSet（收集集合）
+    - **G1HeapWastePercent**: Global concurrent markings 结束之后，我们可以知道 old gen regions 中有多少空间要被回收在每次 YGC 之后和再次发生 Mixed GC 之前会检查垃圾占比是否达到此参数，只有达到了，下次才会发生 Mixed GC
+    - G1MixedGCLiveThresholdPercent: old generation region 中的存活对象的占比，只有在此参数之下，才会被选入 CSet
+    - G1OldCSetRegionThresholdPercent 次 Mixed GC 中能被选入 CSet 的最多 old generation region 数量
+    
+#### 三色标记算法
+
+- 提到并发标记，我们不得不了解并发标记的三色标记算法。它是描述追踪式回收器的一种有效的方法，利用它可以推演回收器的正确性
+- 我们将对象分成三种类型：
+
+    - 黑色：根对象，或者该对象与它的子对象都被扫描过（对象被标记了，且它的所有 feld 也被标记完了）
+
+    - 灰色：对象本身被扫描，但还没扫描完该对象中的子对象（它的 feld 还没有被标记或标记完白色：未被扫描对象，扫描完成所有对象之后最终为
+    - 白色的为不可达对象，即垃圾对象（对象没有被标记到）
+
+#### STAB算法
+- 在 G1 中，使用的是 SATB (Snapshot-At- The- Beginning）的方式，删除的时候记录所有的对象，它有3个步骤：
+    - 在开始标记的时候生成一个快照图，标记存活对象；
+    - 在并发标记的时候所有被改变的对象入队（**在 write barrier 里把所有旧的引用所指向的对象都变成非白的**）；
+    - 可能存在浮动垃圾，将在下次被收集；
+    
+
+#### G1 混合式回收
+- G1 到现在可以知道哪些老的分区可回收垃圾最多。当全局并发标记完成后，在某个时刻，就开始了 Mixed GC。这些垃圾回收被称作“混合式”是因为他们不仅仅进行正常的新生代垃圾收集，同时也回收部分后台扫描线程标记的分区
+- 混合式 GC 也是米用的复制清理策略，当 GC 完成后，会重新释放空间
+#### G1 分代算法
+- 为老年代设置分区的目的是老年代里有的分区垃圾多，有的分区垃圾少，这样在回收的时候可以专注于收集垃圾多的分区这也是 G1 名称的由来。
+- 不过这个算法并**不适合新生代垃圾收集**因为新生代的垃圾收集算法是复制算法但是**新生代也使用了分区机制主要是因为便于代大小的调整**
+
+#### SATB 详解
+- SATB 是维持并发 GC 的一种手段。G1 并发的基础就是 SATB。SATB 可以理解成在 GC 开始之前对堆内存里的对象做一次快照，此时活的对象就认为是活的，从而形成个对象图。
+- 在 GC 收集的时候，新生代的对象也认为是活的对象，除此之外其他不可达的对象都为是垃圾对象。
+- 如何找到在 GC **过程中**分配的对象呢？
+    - 每个 region 记录着两个 **top-at-mark-start (TAMS 指针)**，分别为 prevTAMS和nextTAMS。在 **TAMS 以上的对象就是新分配**的，因而被视为**隐式 marked**。
+    - 通过这种方式我们就找到了在 GC 过程中新分配的对象，并把这些对象认为是活的对象。
+- 解决了对象在 GC 过程中分配的问题，那么在 GC 过程中引用发生变化的问题怎么解决呢？
+    - G1 给出的解决办法是通过 Write Barrier。**Write Barrier就是对引用字段进行赋值做了额外处理。**通过Write Barrier就可以了解到哪些引用对象发生了什么样的变化。
