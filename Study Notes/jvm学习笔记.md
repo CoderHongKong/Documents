@@ -158,3 +158,19 @@
         - 并发标记时，应用线程删除所有灰色对象到该白色对象的引用
             - 对于第二种情况，利用pre-write barrier，将所有即将被删除的引用关系的旧引用记录下来，最后以这些旧引用为根重新扫描一遍
 - 对于三色算法在 concurrent 的时候可能产生的**漏标记问题**，SATB 在 marking 阶段中对于从 gray 对象移除的目标引用对象标记为 gray，对于 black引用的新产生的对象标记为black；由于是在开始的时候进行 snapshot，因而**可能存**在 Floating Garbage
+
+#### 停顿预测模型
+- G1 收集器突出表现出来的一点是通过一个停顿预测模型根据用户配置的停顿时间来选择 CSet 的大小，从而达到用户期待的应用程序暂停时间
+- 通过-XX:MaxGCPauseMillis参数来设置。这一点有点类似于 ParallelScavenge收集器。关于停顿时间的设置并不是越短越好。
+- 设置的时间越短意味着每次收集的 CSet 越小，导致垃圾逐步积累变多，**最终不得不退化成 Serial GC**；停顿时间设置的过长，那么会导致每次都会产生长时间的停顿，影响了程序对外的响应时间
+
+#### G1 的收集模式 
+- Young GC：收集年轻代里的Region 
+- Mixed GC：年轻代的所有 Region+全局并发标记阶段选出的收益高的Region 
+- 无论是Young GC还是Mixed GC都只是并发拷贝的阶段
+- 分代 G1 模式下选择 CSet 有两种子模式，分别对应 Young GC 和 Mixed GC 
+    - Young GC: CSet 就是**所有年轻代里面的 Region**
+    - Mixed GC: CSet 是**所有年轻代里的 Region** 加上在全局并发标记阶段标记出来的收益高（老年代）的 Region
+- G1 的运行过程是这样的：会在 Young GC 和 Mixed GC 之间不断地切换运行，同时定期地做全局并发标记，在实在赶不上对象创建速度的情况下使用 **FullGC (Serial GC)**
+- 初始标记是在Young GC上执行的，在进行全局并发标记的时候不会做 Mixed GC，在做Mixed GC的时候也不会启动初始标记阶段。
+- 当Mixed GC赶不上对象产生的速度的时候就退化成Full GC，这一点是需要重点调优的地方
