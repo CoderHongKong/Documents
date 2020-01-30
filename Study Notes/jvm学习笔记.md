@@ -142,5 +142,19 @@
 - 如何找到在 GC **过程中**分配的对象呢？
     - 每个 region 记录着两个 **top-at-mark-start (TAMS 指针)**，分别为 prevTAMS和nextTAMS。在 **TAMS 以上的对象就是新分配**的，因而被视为**隐式 marked**。
     - 通过这种方式我们就找到了在 GC 过程中新分配的对象，并把这些对象认为是活的对象。
-- 解决了对象在 GC 过程中分配的问题，那么在 GC 过程中引用发生变化的问题怎么解决呢？
+- 解决了对象在 GC 过程中分配的问题，那么**在 GC 过程中引用发生变化**的问题怎么解决呢？
     - G1 给出的解决办法是通过 Write Barrier。**Write Barrier就是对引用字段进行赋值做了额外处理。**通过Write Barrier就可以了解到哪些引用对象发生了什么样的变化。
+- Mark的过程就是遍历heap标记live object的过程，采用的是三色标记算法，这三种颜色为 white（表示还未访问到）、gray（访问到但是它用到的引用还没有完全扫描）、black（访问到而且其用到的引用已经完全扫描完）。
+- 整个三色标记算法就是从GC roots出发遍历heap针对可达对象先标记white为gray，然后再标记gray为black；遍历完成之后所有可达对象都是black的，所有white都是可以回收的。
+- SATB **仅仅对于在 marking 开始阶段**进行 snapshot (marked all reachable at mark start），但是 concurrent 的时候并发修改可能造成对象漏标记。
+- SATB漏标：
+    - 对 black 新引用了一个 white 对象，然后又从 gray 对象中删除了对该 white 对象的引用这样会造成了该 whitey 对象漏标记。
+    - 对 black 新引用了一个 white 对象，然后从 gray 对象删了一个引用该white对象的 white 对象，这样也会造成了该 white 对象漏标记。
+    - 对 black 新引用了一个刚new出来的white对象，没有其他gray对象引用该 white对象这样也会造成了该 white 对象漏标记
+    
+    - 漏标的情况只会发生在白色对象中，且满足以下任意一个条件
+        - 并发标记时，应用线程给一个黑色对象的引用类型字段赋值了该白色对象
+            - 对于第一种情况，利用post-write barrier，记录所有新增的引用关系，然后根据这些引用关系为根重新扫描一遍
+        - 并发标记时，应用线程删除所有灰色对象到该白色对象的引用
+            - 对于第二种情况，利用pre-write barrier，将所有即将被删除的引用关系的旧引用记录下来，最后以这些旧引用为根重新扫描一遍
+- 对于三色算法在 concurrent 的时候可能产生的**漏标记问题**，SATB 在 marking 阶段中对于从 gray 对象移除的目标引用对象标记为 gray，对于 black引用的新产生的对象标记为black；由于是在开始的时候进行 snapshot，因而**可能存**在 Floating Garbage
