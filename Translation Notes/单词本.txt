@@ -1142,13 +1142,88 @@ In contrast to
 
 thought
     英 [θɔːt]   美 [θɔːt]  
-    n.
-    想法;看法;主意;记忆;心思;思想;思考能力;思维过程;思考;思维
-    v.
-    认为;以为;想;思考;思索;思想;琢磨
+    n.想法;看法;主意;记忆;心思;思想;思考能力;思维过程;思考;思维
+    v.认为;以为;想;思考;思索;思想;琢磨
     think的过去分词和过去式
     
 eventual
     英 [ɪˈventʃuəl]   美 [ɪˈventʃuəl]  
-    adj.
-    最后的;最终的;结果的
+    adj.最后的;最终的;结果的
+    
+consistency
+    英 [kənˈsɪstənsi]   美 [kənˈsɪstənsi]  
+    n.一致性;连贯性;黏稠度;密实度;平滑度;坚实度
+    复数： consistencies
+    
+constraint
+    英 [kənˈstreɪnt]   美 [kənˈstreɪnt]  
+    n.限制;限定;约束;严管
+    
+evacuation
+    英 [ɪˌvækju'eɪʃ(ə)n]   美 [ɪˌvækju'eɪʃ(ə)n]  
+    n.疏散；撤离；后撤；抽空；排气；排泄
+
+precedence
+    英 [ˈpresɪdəns]   美 [ˈpresɪdəns]  
+    n.优先;优先权
+    
+guaranteed
+    英 [ˌɡærənˈtiːd]   美 [ˌɡærənˈtiːd]  
+    adj.必然的;确定会发生的
+    v.保证;担保;保障;提供(产品)保修单(免费掉换或修理有问题的产品);使必然发生;确保
+    guarantee的过去分词和过去式
+    
+integrity
+    英 [ɪnˈteɡrəti]   美 [ɪnˈteɡrəti]  
+    n.诚实正直;完整;完好
+    
+corresponding
+    英 [ˌkɒrəˈspɒndɪŋ]   美 [ˌkɔːrəˈspɑːndɪŋ]  
+    adj.符合的;相应的;相关的
+    v.相一致;符合;类似于;相当于;通信
+    correspond的现在分词
+    
+tolerance
+    英 [ˈtɒlərəns]   美 [ˈtɑːlərəns]  
+    n.忍受;容忍;宽容;宽恕;忍耐力;忍受性;耐力;耐量;公差;容限
+    
+disaster
+    英 [dɪˈzɑːstə(r)]   美 [dɪˈzæstər]  
+    n.灾难;灾祸;灾害;不幸;祸患;彻底失败的人(或事)
+    
+lack
+    英 [læk]   美 [læk]  
+    n.缺乏;匮乏;短缺
+    v.没有;缺乏;不足;短缺
+
+in case
+    英 [ɪn keɪs]   美 [ɪn keɪs]  
+    (表示不耐烦地陈述显而易见或与听话人无关的事情)竟然，难道，假使;以备;以防;免得
+    
+perspective
+    英 [pəˈspektɪv]   美 [pərˈspektɪv]  
+    n.态度;观点;思考方法;客观判断力;权衡轻重的能力;透视法
+    In perspective of : 从...角度
+
+mention
+    英 [ˈmenʃn]   美 [ˈmenʃn]  
+    v.提到;写到;说到
+    n.提及;说起;写上一笔
+    
+in terms of
+    英 [ɪn tɜːmz ɒv]   美 [ɪn tɜːrmz əv]  
+    在…方面;从…角度看;根据…来说
+
+loose
+    英 [luːs]   美 [luːs]  
+    adj.未固定牢的;可分开的;未系(或捆)在一起的;未固定的;零散的;不受约束;未束缚;自由
+    v.释放;放任;不受约束地表达;松开，放开(尤指束紧或紧握的东西);射出(子弹、箭等)
+    n.解放;放任;发射;活动（插入式）定位销
+    第三人称单数： looses现在分词： loosing过去式： loosed过去分词： loosed比较级： looser最高级： loosest
+    派生词： looseness n.
+    
+interpret
+    英 [ɪnˈtɜːprət]   美 [ɪnˈtɜːrprət]  
+    v.诠释;说明;把…理解为;领会;口译
+    第三人称单数： interprets现在分词： interpreting过去式： interpreted过去分词： interpreted
+    派生词： interpretable adj.
