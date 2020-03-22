@@ -1227,3 +1227,9 @@ interpret
     v.诠释;说明;把…理解为;领会;口译
     第三人称单数： interprets现在分词： interpreting过去式： interpreted过去分词： interpreted
     派生词： interpretable adj.
+    
+circumstance
+    英 [ˈsɜːkəmstəns]   美 [ˈsɜːrkəmstæns]  
+    n.条件;环境;状况;境况;境遇;(尤指)经济状况;命运;客观环境
+    vt.使处于某种特定的情况之下
+    第三人称单数： circumstances复数： circumstances现在分词： circumstancing过去式： circumstanced过去分词： circumstanced
